@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>明日のゴミは？</title>
+
+  <!-- iPhoneでのWebアプリ化対応 -->
+  <link rel="apple-touch-icon" href="icon.png"> <!-- 180x180推奨 -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="ゴミ通知">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+  <!-- Androidなど向けのPWA設定 -->
+  <link rel="manifest" href="manifest.json">
+
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 2rem;
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    #result {
+      font-size: 1.5rem;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <h1>明日のゴミは？</h1>
+  <p id="result">読み込み中...</p>
+
+  <script>
+    function getTomorrow() {
+      const today = new Date();
+      const tomorrow = new Date(today);
+      tomorrow.setDate(today.getDate() + 1);
+      return tomorrow;
+    }
+
+    function getGomiType(date) {
+      const day = date.getDay();
+      const dateOfMonth = date.getDate();
+      const weekOfMonth = Math.ceil(dateOfMonth / 7);
+
+      if (day === 2 || day === 5) return "可燃ごみ";
+      if (day === 4) {
+        if (weekOfMonth === 1 || weekOfMonth === 3) return "ペットボトル";
+        if (weekOfMonth === 2 || weekOfMonth === 4) return "不燃ごみ";
+      }
+      if (day === 6) return "資源ごみ";
+      return "収集なし";
+    }
+
+    function displayResult() {
+      const tomorrow = getTomorrow();
+      const gomi = getGomiType(tomorrow);
+      const dateStr = tomorrow.toLocaleDateString("ja-JP", {
+        month: 'long',
+        day: 'numeric',
+        weekday: 'long'
+      });
+
+      const resultText = `明日（${dateStr}）は「${gomi}」の日です。`;
+      document.getElementById("result").textContent = resultText;
+    }
+
+    window.onload = displayResult;
+  </script>
+</body>
+</html>
